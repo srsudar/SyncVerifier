@@ -22,4 +22,6 @@
 
     <string name="save_settings">Save Settings</string>
 
+    <string name="anonymous_user">Anonymous User</string>
+
 </resources>
