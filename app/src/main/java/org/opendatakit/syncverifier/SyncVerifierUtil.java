@@ -1,7 +1,8 @@
-package syncverifier.opendatakit.org.syncverifier.util;
+package org.opendatakit.syncverifier;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,6 +30,11 @@ public class SyncVerifierUtil {
 
     public static TextView getTextView(View rootView, int id) {
         TextView result = (TextView) rootView.findViewById(id);
+        return result;
+    }
+
+    public static CheckBox getCheckBox(View rootView, int id) {
+        CheckBox result = (CheckBox) rootView.findViewById(id);
         return result;
     }
 
