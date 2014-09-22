@@ -497,22 +497,10 @@ public class MainFragment extends Fragment implements
 
     String target = httpResponseWrapper.getTargetUrl();
 
-    String responseBody = null;
-    try {
-      responseBody = EntityUtils.toString(httpResponse.getEntity());
-    } catch (IOException e){
-      String message = this.getActivity().getString(
-          R.string.message_ioexception_parsing_entity,
-          e.getCause()
-      );
-      SyncVerifierUtil.toast(this.getActivity(), message);
-      return;
-    }
-
     QueryResponseFragment responseFragment = QueryResponseFragment.newInstance(
         target,
         statusCode,
-        responseBody
+        httpResponseWrapper.getEntityStr()
     );
 
     FragmentManager fragmentManager = this.getActivity().getFragmentManager();

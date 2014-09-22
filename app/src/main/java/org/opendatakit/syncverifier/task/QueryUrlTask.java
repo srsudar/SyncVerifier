@@ -9,6 +9,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.opendatakit.syncverifier.util.HttpResponseWrapper;
 import org.opendatakit.syncverifier.util.IOExceptionWithUrl;
 
@@ -70,9 +71,14 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
     try {
 
       final HttpResponse response = getThreadSafeHttpClient().execute(get);
+
+      String entityStr =
+          EntityUtils.toString(response.getEntity());
+
       HttpResponseWrapper result = new HttpResponseWrapper(
           response,
-          this.mUrlToQuery
+          this.mUrlToQuery,
+          entityStr
       );
       return result;
 
@@ -93,7 +99,7 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
       );
       this.mCallbacks.onQueryIOException(exception);
     } else {
-      this.mCallbacks.onQueryComplete(httpResponse);
+        this.mCallbacks.onQueryComplete(httpResponse);
     }
 
   }
