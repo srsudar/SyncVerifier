@@ -146,7 +146,18 @@ public class MainFragment extends Fragment {
 
     this.updateSavedSettingsUI();
 
-    this.mAuthorizeAccount.setEnabled(this.canAuthorizeAccount());
+    // we only want to authorize the account if the we're not using the
+    // anonymous user.
+    if (this.validSettingsAreSaved()) {
+      if (this.mUseAnonymousUser) {
+        // we don't need auth
+        this.mAuthorizeAccount.setEnabled(false);
+      } else {
+        this.mAuthorizeAccount.setEnabled(true);
+      }
+    } else {
+      this.mAuthorizeAccount.setEnabled(false);
+    }
 
     this.mGetTableList.setEnabled(this.isAuthorized());
 
@@ -238,7 +249,7 @@ public class MainFragment extends Fragment {
 
   }
 
-  protected boolean canAuthorizeAccount() {
+  protected boolean validSettingsAreSaved() {
     boolean savedServerIsValid = this.mSavedServerUrl != null;
     boolean savedUserIsValid =
         this.mUseAnonymousUser ||
