@@ -21,9 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.opendatakit.syncverifier.R;
 import org.opendatakit.syncverifier.task.QueryUrlTask;
 import org.opendatakit.syncverifier.util.FragmentTags;
+import org.opendatakit.syncverifier.util.HttpResponseWrapper;
+import org.opendatakit.syncverifier.util.IOExceptionWithUrl;
 import org.opendatakit.syncverifier.util.SyncVerifierPreferences;
 import org.opendatakit.syncverifier.util.SyncVerifierUtil;
 import org.opendatakit.syncverifier.task.GetAuthTokenTask;
@@ -455,19 +458,70 @@ public class MainFragment extends Fragment implements
   }
 
   @Override
-  public void onQueryIOException(IOException e) {
+  public void onQueryIOException(IOExceptionWithUrl e) {
     this.dismissQueryUrlDialog();
-    String errorMessage = this.getActivity().getString(
-        R.string.msg_on_io_exception,
-        e.getCause()
-    );
 
-    SyncVerifierUtil.toast(this.getActivity(), errorMessage);
+    List<String> stackTrace = new ArrayList<String>();
+
+    for (StackTraceElement traceElement : e.getIOException().getStackTrace()) {
+      stackTrace.add(traceElement.toString());
+    }
+
+    ExceptionSummaryFragment summaryFragment =
+        ExceptionSummaryFragment.newInstance(
+            e.getTargetUrl(),
+            e.getIOException().getClass().getName(),
+            e.getIOException().getMessage(),
+            e.getIOException().getCause().toString(),
+            stackTrace.toArray(new String[0]),
+            e.toString()
+        );
+
+    FragmentManager fragmentManager = this.getActivity().getFragmentManager();
+
+    fragmentManager.beginTransaction().replace(
+        R.id.container,
+        summaryFragment,
+        FragmentTags.EXCEPTION_SUMMARY
+    ).commit();
+
   }
 
   @Override
-  public void onQueryComplete(HttpResponse httpResponse) {
+  public void onQueryComplete(HttpResponseWrapper httpResponseWrapper) {
     this.dismissQueryUrlDialog();
+
+    HttpResponse httpResponse = httpResponseWrapper.getHttpResponse();
+
+    int statusCode = httpResponse.getStatusLine().getStatusCode();
+
+    String target = httpResponseWrapper.getTargetUrl();
+
+    String responseBody = null;
+    try {
+      responseBody = EntityUtils.toString(httpResponse.getEntity());
+    } catch (IOException e){
+      String message = this.getActivity().getString(
+          R.string.message_ioexception_parsing_entity,
+          e.getCause()
+      );
+      SyncVerifierUtil.toast(this.getActivity(), message);
+      return;
+    }
+
+    QueryResponseFragment responseFragment = QueryResponseFragment.newInstance(
+        target,
+        statusCode,
+        responseBody
+    );
+
+    FragmentManager fragmentManager = this.getActivity().getFragmentManager();
+
+    fragmentManager.beginTransaction().replace(
+        R.id.container,
+        responseFragment,
+        FragmentTags.QUERY_RESPONSE
+    ).commit();
 
   }
 

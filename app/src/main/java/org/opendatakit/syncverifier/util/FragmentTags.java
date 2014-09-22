@@ -6,4 +6,6 @@ package org.opendatakit.syncverifier.util;
 public class FragmentTags {
   public static final String GET_AUTH_TOKEN = "getAuthTokenFragment";
   public static final String QUERY_URL = "queryUrlFragment";
+  public static final String QUERY_RESPONSE = "queryResponseFragment";
+  public static final String EXCEPTION_SUMMARY = "exceptionSummaryFragment";
 }

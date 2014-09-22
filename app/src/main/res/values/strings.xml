@@ -41,4 +41,20 @@
 
     <string name="querying_url">Querying %s</string>
 
+    <string name="target_url">Target Url:</string>
+
+    <string name="status_code">Status Code:</string>
+
+    <string name="response_body">Response Body:</string>
+
+    <string name="message_ioexception_parsing_entity">IOException parsing entity: %s</string>
+
+    <string name="exception_class">Exception Class:</string>
+    <string name="exception_cause">Cause:</string>
+    <string name="exception_message">Message:</string>
+    <string name="exception_stack_trace">Stack Trace:</string>
+    <string name="exception_to_string">toString():</string>
+
+    <string name="received_an_exception">Received an Exception</string>
+
 </resources>

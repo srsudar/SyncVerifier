@@ -9,6 +9,8 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
+import org.opendatakit.syncverifier.util.HttpResponseWrapper;
+import org.opendatakit.syncverifier.util.IOExceptionWithUrl;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -16,12 +18,12 @@ import java.net.UnknownHostException;
 /**
  * Created by sudars on 9/21/14.
  */
-public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponse> {
+public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
 
   public interface QueryUrlTaskCallbacks {
 
-    public void onQueryIOException(IOException e);
-    public void onQueryComplete(HttpResponse httpResponse);
+    public void onQueryIOException(IOExceptionWithUrl e);
+    public void onQueryComplete(HttpResponseWrapper httpResponse);
 
   }
 
@@ -61,14 +63,18 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponse> {
   }
 
   @Override
-  protected HttpResponse doInBackground(Void... params) {
+  protected HttpResponseWrapper doInBackground(Void... params) {
 
     final HttpGet get = new HttpGet(this.mUrlToQuery);
 
     try {
 
       final HttpResponse response = getThreadSafeHttpClient().execute(get);
-      return response;
+      HttpResponseWrapper result = new HttpResponseWrapper(
+          response,
+          this.mUrlToQuery
+      );
+      return result;
 
     } catch (IOException e) {
       this.mIOException = e;
@@ -78,10 +84,14 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponse> {
   }
 
   @Override
-  protected void onPostExecute(HttpResponse httpResponse) {
+  protected void onPostExecute(HttpResponseWrapper httpResponse) {
 
     if (this.mIOException != null) {
-      this.mCallbacks.onQueryIOException(this.mIOException);
+      IOExceptionWithUrl exception = new IOExceptionWithUrl(
+          this.mUrlToQuery,
+          this.mIOException
+      );
+      this.mCallbacks.onQueryIOException(exception);
     } else {
       this.mCallbacks.onQueryComplete(httpResponse);
     }
