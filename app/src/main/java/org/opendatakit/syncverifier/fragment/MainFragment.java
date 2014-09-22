@@ -474,7 +474,7 @@ public class MainFragment extends Fragment implements
             e.getIOException().getMessage(),
             e.getIOException().getCause().toString(),
             stackTrace.toArray(new String[0]),
-            e.toString()
+            e.getIOException().toString()
         );
 
     FragmentManager fragmentManager = this.getActivity().getFragmentManager();

@@ -11,6 +11,8 @@ import org.opendatakit.syncverifier.R;
 import org.opendatakit.syncverifier.util.BundleUtil;
 import org.opendatakit.syncverifier.util.SyncVerifierUtil;
 
+import java.util.Arrays;
+
 /**
  * @author sudar.sam@gmail.com
  */
@@ -142,7 +144,7 @@ public class ExceptionSummaryFragment extends Fragment {
     this.mExceptionToStringView.setText(this.mExceptionToString);
 
     this.mExceptionStackTraceView.setText(
-        this.mExceptionStackTrace.toString()
+        Arrays.toString(this.mExceptionStackTrace)
     );
 
 
