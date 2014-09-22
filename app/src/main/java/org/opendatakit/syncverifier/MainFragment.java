@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,12 +131,18 @@ public class MainFragment extends Fragment {
 
     this.mAccountSpinner.setAdapter(adapter);
 
+    this.initListeners();
+
     this.updateUI();
   }
+
 
   protected void updateUI() {
 
     this.mSaveSettings.setEnabled(this.canSaveSettings());
+
+    this.mAccountSpinner.setEnabled(
+        this.mUseAnonymousUserCheckBox.isChecked());
 
     this.updateSavedSettingsUI();
 
@@ -171,6 +180,64 @@ public class MainFragment extends Fragment {
 
   }
 
+  protected void initListeners() {
+
+    this.mSaveSettings.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        MainFragment.this.saveSettings();
+        updateUI();
+      }
+    });
+
+    this.mAuthorizeAccount.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Toast.makeText(
+            getActivity(), "clicked authorize", Toast.LENGTH_SHORT).show();
+        updateUI();
+      }
+    });
+
+    this.mGetTableList.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Toast.makeText(
+            getActivity(),
+             "clicked get list",
+            Toast.LENGTH_SHORT).show();
+        updateUI();
+      }
+    });
+
+    this.mUseAnonymousUserCheckBox.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        updateUI();
+      }
+    });
+
+    this.mEnterServerUrl.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // no op
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        updateUI();
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        // no op
+      }
+    });
+
+
+
+  }
+
   protected boolean canAuthorizeAccount() {
     boolean savedServerIsValid = this.mSavedServerUrl != null;
     boolean savedUserIsValid =
@@ -182,7 +249,7 @@ public class MainFragment extends Fragment {
 
   protected boolean canSaveSettings() {
     boolean enteredServerIsValid =
-        !this.mEnterServerUrl.getText().equals("") &&
+        !this.mEnterServerUrl.getText().toString().equals("") &&
             this.mEnterServerUrl.getText() != null;
     boolean selectedUserIsValid =
         this.mUseAnonymousUserCheckBox.isChecked() ||
