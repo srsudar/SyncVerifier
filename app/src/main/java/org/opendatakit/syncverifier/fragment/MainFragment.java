@@ -49,6 +49,7 @@ public class MainFragment extends Fragment implements
 
   protected TextView mSavedServerUrlView;
   protected TextView mSavedUserView;
+  protected TextView mAuthTokenView;
 
   protected Button mAuthorizeAccount;
   protected Button mGetTableList;
@@ -104,6 +105,11 @@ public class MainFragment extends Fragment implements
     this.mSavedUserView = SyncVerifierUtil.getTextView(
         rootView,
         R.id.main_activity_saved_user
+    );
+
+    this.mAuthTokenView = SyncVerifierUtil.getTextView(
+        rootView,
+        R.id.main_activity_auth_token
     );
 
     this.mAuthorizeAccount = SyncVerifierUtil.getButton(
@@ -209,6 +215,12 @@ public class MainFragment extends Fragment implements
       } else {
         this.mSavedUserView.setText(this.mSavedAccount.name);
       }
+    }
+
+    if (this.mAuthToken == null) {
+      this.mAuthTokenView.setText(R.string.not_authenticated);
+    } else {
+      this.mAuthTokenView.setText(this.mAuthToken);
     }
 
   }

@@ -35,4 +35,8 @@
 
     <string name="retrieved_auth_token_successfully">Retrieved auth token successfully.</string>
 
+    <string name="not_authenticated">Not Authenticated</string>
+
+    <string name="auth_token">Auth Token:</string>
+
 </resources>
