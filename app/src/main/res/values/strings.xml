@@ -24,4 +24,13 @@
 
     <string name="anonymous_user">Anonymous User</string>
 
+    <string name="received_io_exception">Received IO Exception: %s</string>
+
+    <string name="getting_token">Getting Token</string>
+
+    <string name="msg_on_operation_canceled_exception">Got OnOperationCanceledException</string>
+    <string name="msg_on_authenticator_exception">Got AuthenticatorException</string>
+    <string name="msg_on_io_exception">Got IOException: %s</string>
+    <string name="retrived_auth_token_is_null">Retrieved auth token is null.</string>
+
 </resources>

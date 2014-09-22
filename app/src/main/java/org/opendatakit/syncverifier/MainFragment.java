@@ -2,7 +2,10 @@ package org.opendatakit.syncverifier;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +31,10 @@ import java.util.List;
  *
  * @author sudar.sam@gmail.com
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements
+    GetAuthTokenTask.GetAuthTokenCallbacks {
 
   private static final String TAG = MainFragment.class.getSimpleName();
-
-  private static final String ACCOUNT_TYPE_GOOGLE = "com.google";
 
 
   protected EditText mEnterServerUrl;
@@ -45,15 +48,19 @@ public class MainFragment extends Fragment {
   protected Button mAuthorizeAccount;
   protected Button mGetTableList;
 
-  private String mSavedAccountName;
+  private Account mSavedAccount;
   private String mSavedServerUrl;
   private boolean mUseAnonymousUser;
 
   private AccountManager mAccountManager;
 
+  private String mAuthToken;
+
   public MainFragment() {
-    this.mSavedAccountName = null;
+    this.mSavedAccount = null;
     this.mSavedServerUrl = null;
+    this.mUseAnonymousUser = false;
+    this.mAccountManager = null;
   }
 
   @Override
@@ -119,7 +126,8 @@ public class MainFragment extends Fragment {
     super.onResume();
 
     Account[] accounts =
-        this.mAccountManager.getAccountsByType(ACCOUNT_TYPE_GOOGLE);
+        this.mAccountManager.getAccountsByType(
+            SyncVerifierUtil.ACCOUNT_TYPE_GOOGLE);
     List<String> accountNames = new ArrayList<String>(accounts.length);
     for (int i = 0; i < accounts.length; i++)
       accountNames.add(accounts[i].name);
@@ -142,7 +150,7 @@ public class MainFragment extends Fragment {
     this.mSaveSettings.setEnabled(this.canSaveSettings());
 
     this.mAccountSpinner.setEnabled(
-        this.mUseAnonymousUserCheckBox.isChecked());
+        !this.mUseAnonymousUserCheckBox.isChecked());
 
     this.updateSavedSettingsUI();
 
@@ -164,8 +172,7 @@ public class MainFragment extends Fragment {
   }
 
   protected boolean isAuthorized() {
-    Log.e(TAG, "[isAuthorized] unimplemented! returning true");
-    return true;
+    return this.mAuthToken != null;
   }
 
   /**
@@ -182,10 +189,10 @@ public class MainFragment extends Fragment {
     if (this.mUseAnonymousUser) {
       this.mSavedUserView.setText(R.string.anonymous_user);
     } else {
-      if (this.mSavedAccountName == null) {
+      if (this.mSavedAccount == null) {
         this.mSavedUserView.setText(R.string.choose_account);
       } else {
-        this.mSavedUserView.setText(this.mSavedAccountName);
+        this.mSavedUserView.setText(this.mSavedAccount.name);
       }
     }
 
@@ -204,9 +211,24 @@ public class MainFragment extends Fragment {
     this.mAuthorizeAccount.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Toast.makeText(
-            getActivity(), "clicked authorize", Toast.LENGTH_SHORT).show();
-        updateUI();
+        GetAuthTokenDialogFragment dialogFragment =
+            new GetAuthTokenDialogFragment();
+
+        GetAuthTokenTask getAuthTokenTask = new GetAuthTokenTask(
+            mSavedAccount,
+            getActivity().getApplicationContext(),
+            MainFragment.this
+        );
+
+        dialogFragment.setTask(getAuthTokenTask);
+
+        FragmentManager fragmentManager = getActivity().getFragmentManager();
+
+        dialogFragment.show(
+            fragmentManager,
+            SyncVerifierUtil.FragmentTags.GET_AUTH_TOKEN
+        );
+
       }
     });
 
@@ -253,7 +275,7 @@ public class MainFragment extends Fragment {
     boolean savedServerIsValid = this.mSavedServerUrl != null;
     boolean savedUserIsValid =
         this.mUseAnonymousUser ||
-            this.mSavedAccountName != null;
+            this.mSavedAccount != null;
 
     return savedServerIsValid && savedUserIsValid;
   }
@@ -280,12 +302,88 @@ public class MainFragment extends Fragment {
 
     if (this.mUseAnonymousUserCheckBox.isChecked()) {
       this.mUseAnonymousUser = true;
-      this.mSavedAccountName = null;
+      this.mSavedAccount = null;
     } else {
       this.mUseAnonymousUser = false;
-      this.mSavedAccountName = (String) this.mAccountSpinner.getSelectedItem();
+      String accountName = (String) this.mAccountSpinner.getSelectedItem();
+      this.mSavedAccount = new Account(
+          accountName,
+          SyncVerifierUtil.ACCOUNT_TYPE_GOOGLE
+      );
     }
 
+  }
+
+  protected void dismissGetAuthTokenDialog() {
+    GetAuthTokenDialogFragment dialogFragment =
+        this.getAuthTokenDialogFragment();
+    if (dialogFragment != null) {
+      dialogFragment.dismiss();
+    }
+  }
+
+  /**
+   * Get the auth token dialog fragment if it exists.
+   * @return
+   */
+  protected GetAuthTokenDialogFragment getAuthTokenDialogFragment() {
+    FragmentManager fragmentManager = this.getActivity().getFragmentManager();
+    GetAuthTokenDialogFragment result = (GetAuthTokenDialogFragment)
+        fragmentManager.findFragmentByTag(
+            SyncVerifierUtil.FragmentTags.GET_AUTH_TOKEN);
+    return result;
+  }
+
+  @Override
+  public void onOperationCanceledException(OperationCanceledException e) {
+    SyncVerifierUtil.toast(
+        this.getActivity(),
+        R.string.msg_on_operation_canceled_exception
+    );
+
+    this.handleResponseFromTask();
+  }
+
+  @Override
+  public void onAuthenticatorException(AuthenticatorException e) {
+    SyncVerifierUtil.toast(
+        this.getActivity(),
+        R.string.msg_on_authenticator_exception
+    );
+
+    this.handleResponseFromTask();
+  }
+
+  @Override
+  public void onIOException(IOException e) {
+    String message = this.getActivity().getString(
+        R.string.msg_on_io_exception,
+        e.getCause()
+    );
+    SyncVerifierUtil.toast(this.getActivity(), message);
+
+    this.handleResponseFromTask();
+  }
+
+  @Override
+  public void onRetrievedAuthToken(String authToken) {
+
+    if (authToken == null) {
+      SyncVerifierUtil.toast(
+          this.getActivity(),
+          R.string.retrived_auth_token_is_null
+      );
+    }
+
+    this.mAuthToken = authToken;
+
+    this.handleResponseFromTask();
+
+  }
+
+  protected void handleResponseFromTask() {
+    this.dismissGetAuthTokenDialog();
+    this.updateUI();
   }
 
 }
