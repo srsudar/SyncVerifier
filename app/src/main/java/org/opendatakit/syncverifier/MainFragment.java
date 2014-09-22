@@ -1,16 +1,22 @@
 package org.opendatakit.syncverifier;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -21,6 +27,8 @@ import android.widget.TextView;
 public class MainFragment extends Fragment {
 
   private static final String TAG = MainFragment.class.getSimpleName();
+
+  private static final String ACCOUNT_TYPE_GOOGLE = "com.google";
 
 
   protected EditText mEnterServerUrl;
@@ -37,6 +45,8 @@ public class MainFragment extends Fragment {
   private String mSavedAccountName;
   private String mSavedServerUrl;
   private boolean mUseAnonymousUser;
+
+  private AccountManager mAccountManager;
 
   public MainFragment() {
     this.mSavedAccountName = null;
@@ -95,8 +105,29 @@ public class MainFragment extends Fragment {
   }
 
   @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    this.mAccountManager = AccountManager.get(this.getActivity());
+  }
+
+  @Override
   public void onResume() {
     super.onResume();
+
+    Account[] accounts =
+        this.mAccountManager.getAccountsByType(ACCOUNT_TYPE_GOOGLE);
+    List<String> accountNames = new ArrayList<String>(accounts.length);
+    for (int i = 0; i < accounts.length; i++)
+      accountNames.add(accounts[i].name);
+
+    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+        this.getActivity(),
+        android.R.layout.select_dialog_item,
+        accountNames);
+
+    this.mAccountSpinner.setAdapter(adapter);
+
     this.updateUI();
   }
 
