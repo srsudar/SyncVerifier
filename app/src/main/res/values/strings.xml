@@ -39,4 +39,6 @@
 
     <string name="auth_token">Auth Token:</string>
 
+    <string name="querying_url">Querying %s</string>
+
 </resources>

@@ -24,6 +24,11 @@ public class SyncVerifierUtil {
     Toast.makeText(context, string, Toast.LENGTH_SHORT).show();
   }
 
+  public static String getTableListUrl(String baseUrl) {
+    return
+        baseUrl + "/odktables/tables/tables";
+  }
+
   public static EditText getEditText(View rootView, int id) {
     EditText result = (EditText) rootView.findViewById(id);
     return result;

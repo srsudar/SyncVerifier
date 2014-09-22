@@ -20,7 +20,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
 import org.opendatakit.syncverifier.R;
+import org.opendatakit.syncverifier.task.QueryUrlTask;
 import org.opendatakit.syncverifier.util.FragmentTags;
 import org.opendatakit.syncverifier.util.SyncVerifierPreferences;
 import org.opendatakit.syncverifier.util.SyncVerifierUtil;
@@ -37,7 +39,8 @@ import java.util.List;
  * @author sudar.sam@gmail.com
  */
 public class MainFragment extends Fragment implements
-    GetAuthTokenTask.GetAuthTokenCallbacks {
+    GetAuthTokenTask.GetAuthTokenCallbacks,
+    QueryUrlTask.QueryUrlTaskCallbacks {
 
   private static final String TAG = MainFragment.class.getSimpleName();
 
@@ -263,11 +266,22 @@ public class MainFragment extends Fragment implements
     this.mGetTableList.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Toast.makeText(
-            getActivity(),
-             "clicked get list",
-            Toast.LENGTH_SHORT).show();
-        updateUI();
+
+        String url = SyncVerifierUtil.getTableListUrl(mSavedServerUrl);
+
+        QueryUrlTask queryTask = new QueryUrlTask(url, MainFragment.this);
+
+        QueryUrlDialogFragment dialogFragment = new QueryUrlDialogFragment();
+
+        dialogFragment.setTask(queryTask);
+
+        FragmentManager fragmentManager = getActivity().getFragmentManager();
+
+        dialogFragment.show(
+            fragmentManager,
+            FragmentTags.QUERY_URL
+        );
+
       }
     });
 
@@ -355,6 +369,13 @@ public class MainFragment extends Fragment implements
     }
   }
 
+  protected void dismissQueryUrlDialog() {
+    QueryUrlDialogFragment dialogFragment = this.getQueryUrlFragment();
+    if (dialogFragment != null) {
+      dialogFragment.dismiss();
+    }
+  }
+
   /**
    * Get the auth token dialog fragment if it exists.
    * @return
@@ -367,6 +388,15 @@ public class MainFragment extends Fragment implements
     return result;
   }
 
+  protected QueryUrlDialogFragment getQueryUrlFragment() {
+    FragmentManager fragmentManager = this.getActivity().getFragmentManager();
+    QueryUrlDialogFragment dialogFragment = (QueryUrlDialogFragment)
+        fragmentManager.findFragmentByTag(
+            FragmentTags.QUERY_URL
+        );
+    return dialogFragment;
+  }
+
   @Override
   public void onOperationCanceledException(OperationCanceledException e) {
     SyncVerifierUtil.toast(
@@ -374,7 +404,7 @@ public class MainFragment extends Fragment implements
         R.string.msg_on_operation_canceled_exception
     );
 
-    this.handleResponseFromTask();
+    this.handleResponseFromGetAuthTokenTask();
   }
 
   @Override
@@ -384,7 +414,7 @@ public class MainFragment extends Fragment implements
         R.string.msg_on_authenticator_exception
     );
 
-    this.handleResponseFromTask();
+    this.handleResponseFromGetAuthTokenTask();
   }
 
   @Override
@@ -395,7 +425,7 @@ public class MainFragment extends Fragment implements
     );
     SyncVerifierUtil.toast(this.getActivity(), message);
 
-    this.handleResponseFromTask();
+    this.handleResponseFromGetAuthTokenTask();
   }
 
   @Override
@@ -415,13 +445,32 @@ public class MainFragment extends Fragment implements
 
     this.mAuthToken = authToken;
 
-    this.handleResponseFromTask();
+    this.handleResponseFromGetAuthTokenTask();
 
   }
 
-  protected void handleResponseFromTask() {
+  protected void handleResponseFromGetAuthTokenTask() {
     this.dismissGetAuthTokenDialog();
     this.updateUI();
   }
+
+  @Override
+  public void onQueryIOException(IOException e) {
+    this.dismissQueryUrlDialog();
+    String errorMessage = this.getActivity().getString(
+        R.string.msg_on_io_exception,
+        e.getCause()
+    );
+
+    SyncVerifierUtil.toast(this.getActivity(), errorMessage);
+  }
+
+  @Override
+  public void onQueryComplete(HttpResponse httpResponse) {
+    this.dismissQueryUrlDialog();
+
+  }
+
+
 
 }
