@@ -67,6 +67,8 @@
             android:id="@+id/main_activity_saved_server_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:focusable="true"
             android:text="@string/save_a_server_url"
             android:textAppearance="?android:textAppearanceMedium"/>
 
@@ -80,6 +82,8 @@
             android:id="@+id/main_activity_saved_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
+            android:focusable="true"
             android:text="@string/save_a_user"
             android:textAppearance="?android:textAppearanceMedium"/>
 
@@ -92,6 +96,8 @@
         <TextView
             android:id="@+id/main_activity_auth_token"
             android:text="@string/not_authenticated"
+            android:textIsSelectable="true"
+            android:focusable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:textAppearanceMedium"/>

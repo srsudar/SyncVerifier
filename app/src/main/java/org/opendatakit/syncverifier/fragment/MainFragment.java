@@ -188,7 +188,8 @@ public class MainFragment extends Fragment implements
       this.mAuthorizeAccount.setEnabled(false);
     }
 
-    this.mGetTableList.setEnabled(this.isAuthorized());
+    this.mGetTableList.setEnabled(
+        this.isAuthorized() || this.mUseAnonymousUser);
 
   }
 
@@ -334,6 +335,7 @@ public class MainFragment extends Fragment implements
     if (this.mUseAnonymousUserCheckBox.isChecked()) {
       this.mUseAnonymousUser = true;
       this.mSavedAccount = null;
+      this.mAuthToken = null;
     } else {
       this.mUseAnonymousUser = false;
       String accountName = (String) this.mAccountSpinner.getSelectedItem();
