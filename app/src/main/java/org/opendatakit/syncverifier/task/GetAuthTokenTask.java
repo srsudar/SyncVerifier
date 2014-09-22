@@ -1,4 +1,4 @@
-package org.opendatakit.syncverifier;
+package org.opendatakit.syncverifier.task;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -6,6 +6,8 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import org.opendatakit.syncverifier.util.SyncVerifierUtil;
 
 import java.io.IOException;
 

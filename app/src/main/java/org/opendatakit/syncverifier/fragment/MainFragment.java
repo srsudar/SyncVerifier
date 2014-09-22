@@ -1,4 +1,4 @@
-package org.opendatakit.syncverifier;
+package org.opendatakit.syncverifier.fragment;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -9,7 +9,6 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.opendatakit.syncverifier.R;
+import org.opendatakit.syncverifier.util.FragmentTags;
+import org.opendatakit.syncverifier.util.SyncVerifierUtil;
+import org.opendatakit.syncverifier.task.GetAuthTokenTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -226,7 +230,7 @@ public class MainFragment extends Fragment implements
 
         dialogFragment.show(
             fragmentManager,
-            SyncVerifierUtil.FragmentTags.GET_AUTH_TOKEN
+            FragmentTags.GET_AUTH_TOKEN
         );
 
       }
@@ -330,7 +334,7 @@ public class MainFragment extends Fragment implements
     FragmentManager fragmentManager = this.getActivity().getFragmentManager();
     GetAuthTokenDialogFragment result = (GetAuthTokenDialogFragment)
         fragmentManager.findFragmentByTag(
-            SyncVerifierUtil.FragmentTags.GET_AUTH_TOKEN);
+            FragmentTags.GET_AUTH_TOKEN);
     return result;
   }
 

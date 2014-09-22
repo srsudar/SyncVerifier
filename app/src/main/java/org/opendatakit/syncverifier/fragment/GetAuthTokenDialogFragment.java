@@ -1,10 +1,12 @@
-package org.opendatakit.syncverifier;
+package org.opendatakit.syncverifier.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+
+import org.opendatakit.syncverifier.task.GetAuthTokenTask;
+import org.opendatakit.syncverifier.R;
 
 /**
  * @author sudar.sam@gmail.com
