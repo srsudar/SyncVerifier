@@ -33,7 +33,7 @@ server.
   <img 
     alt="The configuration screen of the app."
     src="images/mainScreen.png"
-    style="width:400px">
+    width="400px">
 </p>
 
 If the ping is successful, you will see the url, status code, and response
@@ -43,7 +43,7 @@ body.
   <img
     alt="Contents of successful http queries are summarized."
     src="images/tableListSummary.png"
-    style="width:400px">
+    width="400px">
 </p>
 
 In the case of an exception, information about the exception is provided to aid
@@ -53,7 +53,7 @@ in debuggin.
   <img
     alt="Exceptions are displayed for debugging purposes."
     src="images/exceptionSummary.png"
-    style="width:400px">
+    width="400px">
 </p>
 
 ## Sync Protocol
