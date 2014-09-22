@@ -33,4 +33,6 @@
     <string name="msg_on_io_exception">Got IOException: %s</string>
     <string name="retrived_auth_token_is_null">Retrieved auth token is null.</string>
 
+    <string name="retrieved_auth_token_successfully">Retrieved auth token successfully.</string>
+
 </resources>

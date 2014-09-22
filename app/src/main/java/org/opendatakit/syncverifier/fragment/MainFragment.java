@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import org.opendatakit.syncverifier.R;
 import org.opendatakit.syncverifier.util.FragmentTags;
+import org.opendatakit.syncverifier.util.SyncVerifierPreferences;
 import org.opendatakit.syncverifier.util.SyncVerifierUtil;
 import org.opendatakit.syncverifier.task.GetAuthTokenTask;
 
@@ -116,6 +117,7 @@ public class MainFragment extends Fragment implements
     );
 
     return rootView;
+
   }
 
   @Override
@@ -123,6 +125,11 @@ public class MainFragment extends Fragment implements
     super.onActivityCreated(savedInstanceState);
 
     this.mAccountManager = AccountManager.get(this.getActivity());
+
+    SyncVerifierPreferences preferences =
+        new SyncVerifierPreferences(this.getActivity());
+    this.mSavedServerUrl = preferences.getSavedUrl();
+
   }
 
   @Override
@@ -144,6 +151,10 @@ public class MainFragment extends Fragment implements
     this.mAccountSpinner.setAdapter(adapter);
 
     this.initListeners();
+
+    if (this.mSavedServerUrl != null && !this.mSavedServerUrl.equals("")) {
+      this.mEnterServerUrl.setText(this.mSavedServerUrl);
+    }
 
     this.updateUI();
   }
@@ -304,6 +315,10 @@ public class MainFragment extends Fragment implements
 
     this.mSavedServerUrl = this.mEnterServerUrl.getText().toString();
 
+    SyncVerifierPreferences preferences =
+        new SyncVerifierPreferences(getActivity());
+    preferences.saveUrl(this.mSavedServerUrl);
+
     if (this.mUseAnonymousUserCheckBox.isChecked()) {
       this.mUseAnonymousUser = true;
       this.mSavedAccount = null;
@@ -376,6 +391,11 @@ public class MainFragment extends Fragment implements
       SyncVerifierUtil.toast(
           this.getActivity(),
           R.string.retrived_auth_token_is_null
+      );
+    } else {
+      SyncVerifierUtil.toast(
+          this.getActivity(),
+          R.string.retrieved_auth_token_successfully
       );
     }
 
