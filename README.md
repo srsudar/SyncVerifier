@@ -38,8 +38,8 @@ You can specify a url, an authenticated user, or use the anonymous user.
 
 ### Query Summary
 
-If the ping is successful, you will see the url, status code, and response
-body.
+If the ping is successful, you will see the url, status code, any headers, and
+the response body.
 
 <p align="center">
   <img
