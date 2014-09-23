@@ -25,12 +25,18 @@ sure you don't forget to use `https://`!), choose a user (or perform no
 authentication), authorize, and then try to retrieve a list of tables from the
 server.
 
+### Configuration
+
+You can specify a url, an authenticated user, or use the anonymous user.
+
 <p align="center">
   <img 
     alt="The configuration screen of the app."
     src="images/mainScreen.png"
     width="400px">
 </p>
+
+### Query Summary
 
 If the ping is successful, you will see the url, status code, and response
 body.
@@ -42,8 +48,10 @@ body.
     width="400px">
 </p>
 
+### Exception Summary
+
 In the case of an exception, information about the exception is provided to aid
-in debuggin.
+in debugging.
 
 <p align="center">
   <img
