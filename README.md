@@ -18,10 +18,6 @@ available 2.0-style tables on the server, essentially pinging Aggregate to see
 if things are configured correctly. The goal is that it will help debug issues
 encountered during installation.
 
-> Note! It currently lets you get an auth token, but does not actually pass
-this along to the server. Thus it only allows the anonymous user. This will be
-fixed.
-
 ## The App
 
 The app lets you enter the url of your server (if you're using app engine, make
