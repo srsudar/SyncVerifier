@@ -30,6 +30,21 @@
             android:textAppearance="?android:textAppearanceMedium"/>
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/headers"
+            android:layout_marginTop="5dip" />
+
+        <TextView
+            android:id="@+id/query_fragment_headers"
+            android:text="@string/no_headers"
+            android:textIsSelectable="true"
+            android:focusable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+        <TextView
             android:layout_marginTop="5dip"
             android:text="@string/status_code"
             android:layout_width="match_parent"

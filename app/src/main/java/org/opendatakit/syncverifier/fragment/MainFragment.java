@@ -33,6 +33,7 @@ import org.opendatakit.syncverifier.task.GetAuthTokenTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -272,7 +273,10 @@ public class MainFragment extends Fragment implements
 
         String url = SyncVerifierUtil.getTableListUrl(mSavedServerUrl);
 
-        QueryUrlTask queryTask = new QueryUrlTask(url, MainFragment.this);
+        QueryUrlTask queryTask = new QueryUrlTask(
+            url,
+            MainFragment.this,
+            MainFragment.this.mAuthToken);
 
         QueryUrlDialogFragment dialogFragment = new QueryUrlDialogFragment();
 
@@ -483,7 +487,8 @@ public class MainFragment extends Fragment implements
         R.id.container,
         summaryFragment,
         FragmentTags.EXCEPTION_SUMMARY
-    ).commit();
+    ).addToBackStack(null)
+        .commit();
 
   }
 
@@ -497,10 +502,16 @@ public class MainFragment extends Fragment implements
 
     String target = httpResponseWrapper.getTargetUrl();
 
+    String headersRep = this.getActivity().getString(R.string.no_headers);
+    if (httpResponseWrapper.getRequestHeaders().length > 0) {
+      headersRep = Arrays.toString(httpResponseWrapper.getRequestHeaders());
+    }
+
     QueryResponseFragment responseFragment = QueryResponseFragment.newInstance(
         target,
         statusCode,
-        httpResponseWrapper.getEntityStr()
+        httpResponseWrapper.getEntityStr(),
+        headersRep
     );
 
     FragmentManager fragmentManager = this.getActivity().getFragmentManager();
@@ -509,7 +520,8 @@ public class MainFragment extends Fragment implements
         R.id.container,
         responseFragment,
         FragmentTags.QUERY_RESPONSE
-    ).commit();
+    ).addToBackStack(null)
+        .commit();
 
   }
 

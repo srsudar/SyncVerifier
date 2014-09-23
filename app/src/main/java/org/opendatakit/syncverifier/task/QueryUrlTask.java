@@ -2,6 +2,7 @@ package org.opendatakit.syncverifier.task;
 
 import android.os.AsyncTask;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -20,6 +21,8 @@ import java.net.UnknownHostException;
  * Created by sudars on 9/21/14.
  */
 public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
+
+  protected static final String AUTHORIZATION_HEADER_KEY = "Authorization";
 
   public interface QueryUrlTaskCallbacks {
 
@@ -50,9 +53,21 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
 
   private QueryUrlTaskCallbacks mCallbacks;
 
-  public QueryUrlTask(String urlToQuery, QueryUrlTaskCallbacks callbacks) {
+  private String mAuthToken;
+
+  /**
+   *
+   * @param urlToQuery
+   * @param callbacks
+   * @param authToken if null, authorization will not be used
+   */
+  public QueryUrlTask(
+      String urlToQuery,
+      QueryUrlTaskCallbacks callbacks,
+      String authToken) {
     this.mUrlToQuery = urlToQuery;
     this.mCallbacks = callbacks;
+    this.mAuthToken = authToken;
   }
 
   public String getUrl() {
@@ -63,12 +78,31 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
     this.mCallbacks = callbacks;
   }
 
+  /**
+   * Add the authorization header to the request.
+   * @param request
+   * @param authToken
+   */
+  protected void addODKAuthentication(HttpRequest request, String authToken) {
+    String headerValue = getAuthorizationHeaderValueForToken(authToken);
+    request.addHeader(AUTHORIZATION_HEADER_KEY, headerValue);
+  }
+
+  protected String getAuthorizationHeaderValueForToken(String authToken) {
+    String headerValuePrefix = "Bearer ";
+    return headerValuePrefix + authToken;
+  }
+
   @Override
   protected HttpResponseWrapper doInBackground(Void... params) {
 
     final HttpGet get = new HttpGet(this.mUrlToQuery);
 
     try {
+
+      if (this.mAuthToken != null) {
+        this.addODKAuthentication(get, this.mAuthToken);
+      }
 
       final HttpResponse response = getThreadSafeHttpClient().execute(get);
 
@@ -78,8 +112,10 @@ public class QueryUrlTask extends AsyncTask<Void, Void, HttpResponseWrapper> {
       HttpResponseWrapper result = new HttpResponseWrapper(
           response,
           this.mUrlToQuery,
-          entityStr
+          entityStr,
+          get.getAllHeaders()
       );
+
       return result;
 
     } catch (IOException e) {

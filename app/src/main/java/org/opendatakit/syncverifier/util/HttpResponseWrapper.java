@@ -1,6 +1,9 @@
 package org.opendatakit.syncverifier.util;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+
+import java.util.Arrays;
 
 /**
  * Very basic wrapper for an {@link org.apache.http.HttpResponse}.
@@ -10,6 +13,7 @@ public class HttpResponseWrapper {
 
   private String mTargetUrl;
   private HttpResponse mHttpResponse;
+  private Header[] mRequestHeaders;
 
   /**
    * The response entity as a string. This could be calculated from the
@@ -21,10 +25,12 @@ public class HttpResponseWrapper {
   public HttpResponseWrapper(
       HttpResponse response,
       String targetUrl,
-      String entityStr) {
+      String entityStr,
+      Header[] requestHeaders) {
     this.mHttpResponse = response;
     this.mTargetUrl = targetUrl;
     this.mEntityStr = entityStr;
+    this.mRequestHeaders = requestHeaders;
   }
 
 
@@ -32,24 +38,16 @@ public class HttpResponseWrapper {
     return mTargetUrl;
   }
 
-  public void setTargetUrl(String targetUrl) {
-    this.mTargetUrl = targetUrl;
-  }
-
   public HttpResponse getHttpResponse() {
     return mHttpResponse;
   }
 
-  public void setHttpResponse(HttpResponse httpResponse) {
-    this.mHttpResponse = httpResponse;
-  }
-
-  public void setEntityStr(String entityStr) {
-    this.mEntityStr = entityStr;
-  }
-
   public String getEntityStr() {
     return this.mEntityStr;
+  }
+
+  public Header[] getRequestHeaders() {
+    return this.mRequestHeaders;
   }
 
   @Override
@@ -63,6 +61,8 @@ public class HttpResponseWrapper {
       return false;
     if (mHttpResponse != null ? !mHttpResponse.equals(that.mHttpResponse) : that.mHttpResponse != null)
       return false;
+    if (!Arrays.equals(mRequestHeaders, that.mRequestHeaders))
+      return false;
     if (mTargetUrl != null ? !mTargetUrl.equals(that.mTargetUrl) : that.mTargetUrl != null)
       return false;
 
@@ -73,6 +73,7 @@ public class HttpResponseWrapper {
   public int hashCode() {
     int result = mTargetUrl != null ? mTargetUrl.hashCode() : 0;
     result = 31 * result + (mHttpResponse != null ? mHttpResponse.hashCode() : 0);
+    result = 31 * result + (mRequestHeaders != null ? Arrays.hashCode(mRequestHeaders) : 0);
     result = 31 * result + (mEntityStr != null ? mEntityStr.hashCode() : 0);
     return result;
   }
@@ -82,7 +83,9 @@ public class HttpResponseWrapper {
     return "HttpResponseWrapper{" +
         "mTargetUrl='" + mTargetUrl + '\'' +
         ", mHttpResponse=" + mHttpResponse +
+        ", mRequestHeaders=" + Arrays.toString(mRequestHeaders) +
         ", mEntityStr='" + mEntityStr + '\'' +
         '}';
   }
+
 }

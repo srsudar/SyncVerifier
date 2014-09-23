@@ -30,6 +30,9 @@ public class BundleArgs {
   public static final String EXCEPTION_TO_STRING =
       getPrefixedKey("exception_to_string");
 
+  public static final String HEADERS_REPRESENTATION =
+      getPrefixedKey("headers_representation");
+
   private static String getPrefixedKey(String key) {
     return "org.opendatakit.syncverifier." + key;
   }

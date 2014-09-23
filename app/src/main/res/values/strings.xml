@@ -57,4 +57,7 @@
 
     <string name="received_an_exception">Received an Exception</string>
 
+    <string name="headers">Headers</string>
+    <string name="no_headers">No Headers</string>
+
 </resources>

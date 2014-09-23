@@ -19,20 +19,26 @@ public class QueryResponseFragment extends Fragment {
   private TextView mTargetUrlView;
   private TextView mStatusCodeView;
   private TextView mResponseBodyView;
+  private TextView mHeadersView;
 
   private String mTargetUrl;
   private int mStatusCode;
   private String mResponseBody;
+  private String mHeadersRepresentation;
 
   public static QueryResponseFragment newInstance(
       String targetUrl,
       int statusCode,
-      String responseBody) {
+      String responseBody,
+      String headersRepresentation) {
     Bundle arguments = new Bundle();
 
     BundleUtil.putTargetUrlInBundle(arguments, targetUrl);
     BundleUtil.putStatusCodeInBundle(arguments, statusCode);
     BundleUtil.putResponseBodyInBundle(arguments, responseBody);
+    BundleUtil.putHeadersRepresentationInBundle(
+        arguments,
+        headersRepresentation);
 
     QueryResponseFragment result = new QueryResponseFragment();
 
@@ -51,6 +57,8 @@ public class QueryResponseFragment extends Fragment {
     this.mTargetUrl = BundleUtil.getTargetUrlFromBundle(arguments, true);
     this.mStatusCode = BundleUtil.getStatusCodeFromBundle(arguments, true);
     this.mResponseBody = BundleUtil.getResponseBodyFromBundle(arguments, true);
+    this.mHeadersRepresentation =
+        BundleUtil.getHeadersRepresentationFromBundle(arguments, true);
 
   }
 
@@ -69,6 +77,11 @@ public class QueryResponseFragment extends Fragment {
     this.mTargetUrlView = SyncVerifierUtil.getTextView(
         rootView,
         R.id.query_fragment_target_url
+    );
+
+    this.mHeadersView = SyncVerifierUtil.getTextView(
+        rootView,
+        R.id.query_fragment_headers
     );
 
     this.mStatusCodeView = SyncVerifierUtil.getTextView(
@@ -94,6 +107,8 @@ public class QueryResponseFragment extends Fragment {
     this.mStatusCodeView.setText(Integer.toString(this.mStatusCode));
 
     this.mResponseBodyView.setText(this.mResponseBody);
+
+    this.mHeadersView.setText(this.mHeadersRepresentation);
 
   }
 }

@@ -25,6 +25,12 @@ public class BundleUtil {
     bundle.putString(BundleArgs.RESPONSE_BODY, responseBody);
   }
 
+  public static void putHeadersRepresentationInBundle(
+      Bundle bundle,
+      String headersRepresentation) {
+    bundle.putString(BundleArgs.HEADERS_REPRESENTATION, headersRepresentation);
+  }
+
   public static void putExceptionClassNameInBundle(
       Bundle bundle,
       String className) {
@@ -60,6 +66,14 @@ public class BundleUtil {
       boolean throwIfNotPresent) {
     doThrowHelper(bundle, BundleArgs.EXCEPTION_CLASS, throwIfNotPresent);
     return bundle.getString(BundleArgs.EXCEPTION_CLASS);
+  }
+
+  public static String getHeadersRepresentationFromBundle(
+      Bundle bundle,
+      boolean throwIfNorPresent) {
+    String key = BundleArgs.HEADERS_REPRESENTATION;
+    doThrowHelper(bundle, key, throwIfNorPresent);
+    return bundle.getString(key);
   }
 
   public static String getExceptionMessageFromBundle(
