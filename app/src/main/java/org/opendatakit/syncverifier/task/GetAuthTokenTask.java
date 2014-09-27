@@ -20,7 +20,7 @@ public class GetAuthTokenTask extends AsyncTask<Void, Void, String> {
 
     public void onOperationCanceledException(OperationCanceledException e);
     public void onAuthenticatorException(AuthenticatorException e);
-    public void onIOException(IOException e);
+    public void onGetAuthTokenIOException(IOException e);
     public void onRetrievedAuthToken(String authToken);
 
   }
@@ -109,7 +109,7 @@ public class GetAuthTokenTask extends AsyncTask<Void, Void, String> {
     } else if (this.mAuthenticatorException != null) {
       this.mCallbacks.onAuthenticatorException(this.mAuthenticatorException);
     } else if (this.mIOException != null) {
-      this.mCallbacks.onIOException(this.mIOException);
+      this.mCallbacks.onGetAuthTokenIOException(this.mIOException);
     } else {
       this.mCallbacks.onRetrievedAuthToken(authToken);
     }

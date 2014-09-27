@@ -425,14 +425,50 @@ public class MainFragment extends Fragment implements
   }
 
   @Override
-  public void onIOException(IOException e) {
-    String message = this.getActivity().getString(
-        R.string.msg_on_io_exception,
-        e.getCause()
-    );
-    SyncVerifierUtil.toast(this.getActivity(), message);
+  public void onGetAuthTokenIOException(IOException e) {
 
-    this.handleResponseFromGetAuthTokenTask();
+    this.dismissGetAuthTokenDialog();
+
+    List<String> stackTrace = new ArrayList<String>();
+
+    for (StackTraceElement traceElement : e.getStackTrace()) {
+      stackTrace.add(traceElement.toString());
+    }
+
+    ExceptionSummaryFragment summaryFragment =
+        ExceptionSummaryFragment.newInstance(
+            this.getActivity().getString(R.string.na),
+            e.getClass().getName(),
+            this.getMessageFromException(e),
+            this.getCauseFromException(e),
+            stackTrace.toArray(new String[0]),
+            e.toString()
+        );
+
+    FragmentManager fragmentManager = this.getActivity().getFragmentManager();
+
+    fragmentManager.beginTransaction().replace(
+        R.id.container,
+        summaryFragment,
+        FragmentTags.EXCEPTION_SUMMARY
+    ).addToBackStack(null)
+        .commit();
+
+
+  }
+
+  protected String getMessageFromException(Exception e) {
+    String result = e.getMessage() == null ?
+        this.getString(R.string.na) :
+        e.getMessage();
+    return result;
+  }
+
+  protected String getCauseFromException(Exception e) {
+    String result = e.getCause() == null ?
+        this.getString(R.string.na) :
+        e.getMessage();
+    return result;
   }
 
   @Override
@@ -475,8 +511,8 @@ public class MainFragment extends Fragment implements
         ExceptionSummaryFragment.newInstance(
             e.getTargetUrl(),
             e.getIOException().getClass().getName(),
-            e.getIOException().getMessage(),
-            e.getIOException().getCause().toString(),
+            this.getMessageFromException(e.getIOException()),
+            this.getCauseFromException(e.getIOException()),
             stackTrace.toArray(new String[0]),
             e.getIOException().toString()
         );
@@ -491,6 +527,7 @@ public class MainFragment extends Fragment implements
         .commit();
 
   }
+
 
   @Override
   public void onQueryComplete(HttpResponseWrapper httpResponseWrapper) {

@@ -60,4 +60,6 @@
     <string name="headers">Headers</string>
     <string name="no_headers">No Headers</string>
 
+    <string name="na">N/A</string>
+
 </resources>
