@@ -6,12 +6,15 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -239,6 +242,10 @@ public class MainFragment extends Fragment implements
       @Override
       public void onClick(View v) {
         MainFragment.this.saveSettings();
+        MainFragment.this.mEnterServerUrl.clearFocus();
+        InputMethodManager imm = (InputMethodManager) MainFragment.this.
+            getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEnterServerUrl.getWindowToken(), 0);
         updateUI();
       }
     });
