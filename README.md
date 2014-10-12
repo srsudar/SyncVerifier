@@ -18,6 +18,9 @@ available 2.0-style tables on the server, essentially pinging Aggregate to see
 if things are configured correctly. The goal is that it will help debug issues
 encountered during installation.
 
+While not currently on the Play Store, you can download the latest snapshot
+build [here](http://samsudar.com/projects/apks/syncVerifier-1.0.0.apk).
+
 ## The App
 
 The app lets you enter the url of your server (if you're using app engine, make
